@@ -22,7 +22,7 @@ def save_as_file_formated(data_array):
         try:
             with open(file_path, 'w') as file:
                 for item in data_array:
-                    file.write("<#" + str(item) + ">" + '\n')
+                    file.write("<@" + str(item) + ">" + '\n')
             print("Data saved successfully.")
         except IOError:
             print("Error: Unable to save data to the specified file path.")
@@ -48,13 +48,13 @@ def create_left_frame_a(parent):
     entry2 = tk.Entry(left_frame, width=30)
     entry2.grid(row=3, column=0, padx=10, pady=10)
 
-    run_button = tk.Button(left_frame, text="Run", command=run_page_a_get_dms)
+    run_button = tk.Button(left_frame, text="Run", command=all_dms_no_save)
     run_button.grid(row=4, column=0, pady=10)
 
     save_clean_button = tk.Button(left_frame, text="Save as file", command=save_dms_as)
     save_clean_button.grid(row=5, column=0, pady=10)
 
-    save_formated_button = tk.Button(left_frame, text="Save as formated file <#id>", command=save_dms_as_formated)
+    save_formated_button = tk.Button(left_frame, text="Save as formated file <@id>", command=save_dms_as_formated)
     save_formated_button.grid(row=6, column=0, pady=10)
 
     return left_frame, entry1, entry2
@@ -95,13 +95,17 @@ def show_page_a():
     right_frame_a, output_text_a = create_right_frame_a(page_a)
     right_frame_a.pack(side=tk.LEFT, padx=10, pady=10)
 
+def all_dms_no_save():
+    get_dms(0)
+
 def save_dms_as():
-    run_page_a_get_dms(1)
+    get_dms(1)
 
 def save_dms_as_formated():
-    run_page_a_get_dms(2)
+    get_dms(2)
 
-def run_page_a_get_dms(which_save):
+def get_dms(which_save):
+    print("Running All Dms")
     global totalDms, output_text_a
 
     file_location = entry1_a.get()
@@ -136,7 +140,6 @@ def run_page_a_get_dms(which_save):
     output_text_a.config(state=tk.DISABLED)
 
     print("Other Users IDs:", totalDms)
-    print("Running Page A")
     print("File Location:", file_location)
     print("User ID:", user_id)
 
@@ -178,7 +181,7 @@ def create_right_frame_b(parent):
         right_frame,
         wrap=tk.WORD,
         state=tk.DISABLED,
-        width=40,
+        width=55,
         height=10
     )
     output_text_b.grid(row=1, column=0, padx=10, pady=10)
@@ -196,6 +199,7 @@ def show_page_b():
     right_frame_b.pack(side=tk.LEFT, padx=10, pady=10)
 
 def run_page_b():
+    print("Running 'Messages from a specific user'")
     folder_location = entry1_b.get()
     user_id_to_search = entry2_b.get()
 
@@ -218,11 +222,12 @@ def run_page_b():
                 if channel_data.get("type", 0) == 1 and user_id_to_search in channel_data.get("recipients", []):
                     output_text_b.insert(tk.END, f"File Path: {messages_path}\n")
 
+                    open_file(messages_path)
                     with open(messages_path, 'r', encoding='utf-8') as messages_file:
-                        next(messages_file)  # Skip header line if any
+                        next(messages_file)
                         for line in messages_file:
                             columns = line.split(',')
-                            if len(columns) >= 4:  # Check if there are enough columns
+                            if len(columns) >= 4:
                                 message_content = columns[2].strip()
                                 attachments = columns[3].strip()
                                 
@@ -238,43 +243,24 @@ def run_page_b():
                             else:
                                 print("Unknown error!")
     output_text_b.config(state=tk.DISABLED)
-
-    print("Running Page B")
-
-    open_file(messages_path)
-                                
-"""
-                    with open(messages_path, 'r', encoding='utf-8') as messages_file:
-                        next(messages_file)
-                        for line in messages_file:
-                            columns = line.split(',')
-                            message_content = columns[2].strip()
-                            attachments = columns[3].strip()
-                            
-                            if message_content:
-                                output_text_b.insert(tk.END, f"{message_content}\n")
-                            
-                            if attachments:
-                                output_text_b.insert(tk.END, f"{attachments}\n")
-"""
-                    
-
-    
-    
-
+                                                            
 def create_left_frame_c(parent):
+    global entry1_c
     left_frame = tk.Frame(parent)
 
     label1 = tk.Label(left_frame, text="Unzipped package location:")
     label1.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-    entry1 = tk.Entry(left_frame, width=30)
-    entry1.grid(row=1, column=0, padx=10, pady=10)
+    entry1_c = tk.Entry(left_frame, width=30)
+    entry1_c.grid(row=1, column=0, padx=10, pady=10)
 
-    run_button = tk.Button(left_frame, text="Run", command=run_page_c)
+    run_button = tk.Button(left_frame, text="Run", command=all_links_no_save)
     run_button.grid(row=2, column=0, pady=10)
 
-    return left_frame, entry1
+    save_links_button = tk.Button(left_frame, text="Save as file", command=all_links_yes_save)
+    save_links_button.grid(row=3, column=0, pady=10)
+
+    return left_frame, entry1_c
 
 def create_right_frame_c(parent):
     right_frame = tk.Frame(parent)
@@ -304,13 +290,35 @@ def show_page_c():
     right_frame_c, output_text_c = create_right_frame_c(page_c)
     right_frame_c.pack(side=tk.LEFT, padx=10, pady=10)
 
-def run_page_c():
-    print("Running Page C")
+def all_links_no_save():
+    get_all_links(0)
+
+def all_links_yes_save():
+    get_all_links(1)
+
+def get_all_links(which_save):
+    print("Running All Links")
+
+
+"""if(zawartoscPliku.__contains__('"type": 1') and zawartoscPliku.__contains__('"type": 11') == False):
+        print("dm")
+        dmCounter += 1
+        totalDms.append(zawartoscPliku)
+        if zawartoscPliku.__contains__(userId):
+            os.startfile(messages)
+            if lookForAttachments == 1:
+                with open(messages, 'r', encoding='utf-8') as messagesFile:
+                    for line in messagesFile.readlines():
+                        if line.__contains__("https://cdn.discordapp.com/attachments") or line.__contains__("https://media.discordapp.net") or line.__contains__("https://images-ext-1.discordapp.net") or line.__contains__("https://images-ext-2.discordapp.net"):
+                            attachments.append(line.split(',')[3])
+                        else:
+                            if line.__contains__("https://") or line.__contains__("http://"):
+                                weblinks.append(line)"""
 
 def show_info_window():
     info_window = tk.Toplevel(window)
     info_window.title("Instructions")
-    info_window.geometry("500x250")
+    info_window.geometry("600x400")
 
     info_text = scrolledtext.ScrolledText(
         info_window,
@@ -323,8 +331,10 @@ def show_info_window():
     info_text.insert(tk.END,"\n\nExample of proper package folder location:\nC:\\Users\\You\\Desktop\\package\\messages")
     info_text.insert(tk.END,"\n\nAll dms function notes:\n\nHow to get your discord ID?\nYou can left click on yourself in the discord app on bottom right when you have developer mode enabled and you should see a 'Copy User ID' button. Click that and the ID will be stored in your clipboard. Alternatively just check for duplicates in dm folderns for the ID you're looking for. You do you.")
     info_text.insert(tk.END,"\n\nMessages from a specific user notes:\n\nHow to get the specific user ID?\nFor that please use the first function or if you can, you can copy that persons ID off of discord with developer mode enabled. Simply right click on the user and you should see a 'Copy User ID' button.")
+    info_text.insert(tk.END,"\n\nAll links and attachments:\n\nDiscord has made a change where old attachment links won't work. The program will still show you all of the attachment links as well as links to other websites but this is sadly something that's unable to fix due to the issue existing on discords end.")
     info_text.insert(tk.END,"\n\nKnown bugs:\n\nThe program sometimes stuggles with reading certain lines of messages in 'Messages from a specific user' screen due to them being\nwritten\nlike\nthis\nI reccomend fully checking the csv file if you're looking for something specific!")
     info_text.pack(padx=10, pady=10)
+    info_text.config(state=tk.DISABLED)
 
 def show_info_button():
     show_info_window()
