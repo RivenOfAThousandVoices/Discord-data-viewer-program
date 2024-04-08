@@ -189,7 +189,7 @@ def create_right_frame_b(parent):
     return right_frame, output_text_b
 def show_page_b():
     page_b = tk.Toplevel(window)
-    page_b.title("Messages from a specific user")
+    page_b.title("Messages to a specific user")
     page_b.geometry("800x400")
 
     left_frame, entry1_b, entry2_b = create_left_frame_b(page_b)
@@ -199,7 +199,7 @@ def show_page_b():
     right_frame_b.pack(side=tk.LEFT, padx=10, pady=10)
 
 def run_page_b():
-    print("Running 'Messages from a specific user'")
+    print("Running 'Messages to a specific user'")
     folder_location = entry1_b.get()
     user_id_to_search = entry2_b.get()
 
@@ -263,21 +263,23 @@ def create_left_frame_c(parent):
     return left_frame, entry1_c
 
 def create_right_frame_c(parent):
+    global output_text_c
     right_frame = tk.Frame(parent)
 
     output_label = tk.Label(right_frame, text="Output:")
     output_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-    output_text = scrolledtext.ScrolledText(
+    output_text_c = scrolledtext.ScrolledText(
         right_frame,
         wrap=tk.WORD,
         state=tk.DISABLED,
-        width=40,
+        width=55,
         height=10
     )
-    output_text.grid(row=1, column=0, padx=10, pady=10)
+    output_text_c.grid(row=1, column=0, padx=10, pady=10)
 
-    return right_frame, output_text
+    return right_frame, output_text_c
+
 
 def show_page_c():
     page_c = tk.Toplevel(window)
@@ -298,22 +300,55 @@ def all_links_yes_save():
 
 def get_all_links(which_save):
     print("Running All Links")
+    links = []
+    folder_location = entry1_c.get()
 
+    print(f"Folder Location: {folder_location}")
 
-"""if(zawartoscPliku.__contains__('"type": 1') and zawartoscPliku.__contains__('"type": 11') == False):
-        print("dm")
-        dmCounter += 1
-        totalDms.append(zawartoscPliku)
-        if zawartoscPliku.__contains__(userId):
-            os.startfile(messages)
-            if lookForAttachments == 1:
-                with open(messages, 'r', encoding='utf-8') as messagesFile:
-                    for line in messagesFile.readlines():
-                        if line.__contains__("https://cdn.discordapp.com/attachments") or line.__contains__("https://media.discordapp.net") or line.__contains__("https://images-ext-1.discordapp.net") or line.__contains__("https://images-ext-2.discordapp.net"):
-                            attachments.append(line.split(',')[3])
-                        else:
-                            if line.__contains__("https://") or line.__contains__("http://"):
-                                weblinks.append(line)"""
+    output_text_c.config(state=tk.NORMAL)
+
+    for folder in os.listdir(folder_location):
+        folder_path = os.path.join(folder_location, folder)
+        channel_json_path = os.path.join(folder_path, 'channel.json')
+        print(f"channel_json_path: {channel_json_path}")
+        messages_path = os.path.join(folder_path, 'messages.csv')
+        print(f"messages_path: {messages_path}")
+
+        if os.path.exists(channel_json_path) and os.path.exists(messages_path):
+            with open(messages_path, 'r', encoding='utf-8') as messages_file:
+                next(messages_file)
+                for line in messages_file:
+                    columns = line.split(',')
+                    if len(columns) >= 4:
+                        message_content = columns[2].strip()
+                        attachments = columns[3].strip()
+
+                        if "https://" in message_content or "http://" in message_content:
+                            if message_content:
+                                output_text_c.insert(tk.END, f"{message_content}\n")
+                                links.append(message_content)
+
+                            if attachments:
+                                output_text_c.insert(tk.END, f"{attachments}\n")
+                                links.append(attachments)
+
+                        if "https://" in attachments or "http://" in attachments:
+                            if attachments and not message_content:
+                                output_text_c.insert(tk.END, f"{attachments}\n")
+                                links.append(attachments)
+                    elif len(columns) == 3:
+                        message_content = columns[2].strip()
+                        if "https://" in message_content or "http://" in message_content:
+                            links.append(message_content)
+                            if message_content:
+                                output_text_c.insert(tk.END, f"{message_content}\n")
+                                
+                    else:
+                        print("Unknown error!")
+    output_text_c.config(state=tk.DISABLED)
+
+    if(which_save == 1):
+        save_as_file(links)
 
 def show_info_window():
     info_window = tk.Toplevel(window)
@@ -330,9 +365,9 @@ def show_info_window():
     info_text.insert(tk.END, "In order to use this program, you first need to request your data from Discord, then wait a few days until you get an email with your data. After you get the email, download the package.zip file and unzip it. Save the unzipped package folder location somewhere for ease of use.")
     info_text.insert(tk.END,"\n\nExample of proper package folder location:\nC:\\Users\\You\\Desktop\\package\\messages")
     info_text.insert(tk.END,"\n\nAll dms function notes:\n\nHow to get your discord ID?\nYou can left click on yourself in the discord app on bottom right when you have developer mode enabled and you should see a 'Copy User ID' button. Click that and the ID will be stored in your clipboard. Alternatively just check for duplicates in dm folderns for the ID you're looking for. You do you.")
-    info_text.insert(tk.END,"\n\nMessages from a specific user notes:\n\nHow to get the specific user ID?\nFor that please use the first function or if you can, you can copy that persons ID off of discord with developer mode enabled. Simply right click on the user and you should see a 'Copy User ID' button.")
+    info_text.insert(tk.END,"\n\nMessages to a specific user notes:\n\nHow to get the specific user ID?\nFor that please use the first function or if you can, you can copy that persons ID off of discord with developer mode enabled. Simply right click on the user and you should see a 'Copy User ID' button.")
     info_text.insert(tk.END,"\n\nAll links and attachments:\n\nDiscord has made a change where old attachment links won't work. The program will still show you all of the attachment links as well as links to other websites but this is sadly something that's unable to fix due to the issue existing on discords end.")
-    info_text.insert(tk.END,"\n\nKnown bugs:\n\nThe program sometimes stuggles with reading certain lines of messages in 'Messages from a specific user' screen due to them being\nwritten\nlike\nthis\nI reccomend fully checking the csv file if you're looking for something specific!")
+    info_text.insert(tk.END,"\n\nKnown bugs:\n\nThe program sometimes stuggles with reading certain lines of messages in 'Messages to a specific user' screen due to them being\nwritten\nlike\nthis\nI reccomend fully checking the csv file if you're looking for something specific!")
     info_text.pack(padx=10, pady=10)
     info_text.config(state=tk.DISABLED)
 
@@ -350,7 +385,7 @@ info_button = tk.Button(window, text="Info", command=show_info_button)
 info_button.pack(side=tk.TOP, pady=10)
 
 button_a = tk.Button(window, text="Total DMs", command=show_page_a)
-button_b = tk.Button(window, text="Messages from someone special <3", command=show_page_b)
+button_b = tk.Button(window, text="Messages to a specific user", command=show_page_b)
 button_c = tk.Button(window, text="All links and attachments", command=show_page_c)
 
 button_a.pack(side=tk.LEFT, padx=10, pady=10,)
