@@ -3,3 +3,6 @@ This program allows you to easily view discord package folder that you get when 
 
 4th of April 2024:
 There have been multiple updates been made to the program and I will continue work on it later tomorrow! Please look at DiscordDataViewerBeta.py for the improved version of the app!
+
+8th of April 2024:
+The program has been finished! :)
