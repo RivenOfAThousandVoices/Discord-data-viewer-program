@@ -9,7 +9,7 @@ def save_as_file(data_array):
     file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
     if file_path:
         try:
-            with open(file_path, 'w') as file:
+            with open(file_path, 'w', encoding="utf-8") as file:
                 for item in data_array:
                     file.write(str(item) + '\n')
             print("Data saved successfully.")
@@ -20,7 +20,7 @@ def save_as_file_formated(data_array):
     file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
     if file_path:
         try:
-            with open(file_path, 'w') as file:
+            with open(file_path, 'w', encoding="utf-8") as file:
                 for item in data_array:
                     file.write("<@" + str(item) + ">" + '\n')
             print("Data saved successfully.")
