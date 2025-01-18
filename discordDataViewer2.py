@@ -126,7 +126,7 @@ def get_dms(which_save):
                 channel_data = json.load(channel_file)
                 print("Channel Data:", channel_data)
 
-                if channel_data.get("type", 0) == 1 and channel_data.get("type", 11) != 11:
+                if channel_data.get("type") == "DM":
                     print("dm")
                     other_user_id = channel_data["recipients"][0] if channel_data["recipients"][0] != user_id else channel_data["recipients"][1]
                     totalDms.append(other_user_id)
@@ -219,7 +219,7 @@ def run_page_b():
             with open(channel_json_path, 'r', encoding='utf-8') as channel_file:
                 channel_data = json.load(channel_file)
 
-                if channel_data.get("type", 0) == 1 and user_id_to_search in channel_data.get("recipients", []):
+                if channel_data.get("type") == "DM" and user_id_to_search in channel_data.get("recipients", []):
                     output_text_b.insert(tk.END, f"File Path: {messages_path}\n")
 
                     open_file(messages_path)
@@ -243,7 +243,7 @@ def run_page_b():
                             else:
                                 print("Unknown error!")
     output_text_b.config(state=tk.DISABLED)
-                                                            
+                       
 def create_left_frame_c(parent):
     global entry1_c
     left_frame = tk.Frame(parent)
